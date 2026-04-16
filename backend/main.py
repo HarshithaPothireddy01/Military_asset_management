@@ -4,7 +4,12 @@ from database import SessionLocal, engine, Base
 import models
 from pydantic import BaseModel
 
-app = FastAPI()
+# ✅ FIXED FastAPI config (important for Render)
+app = FastAPI(
+    title="Military Asset Management System",
+    docs_url="/docs",
+    openapi_url="/openapi.json"
+)
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -16,6 +21,14 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# =========================
+# TEST ROUTE (for deployment check)
+# =========================
+@app.get("/test")
+def test():
+    return {"status": "working"}
 
 
 # =========================
@@ -187,7 +200,7 @@ def dashboard(db: Session = Depends(get_db)):
 
 
 # =========================
-# VIEW LOGS (BONUS)
+# VIEW LOGS
 # =========================
 @app.get("/logs")
 def get_logs(db: Session = Depends(get_db)):
